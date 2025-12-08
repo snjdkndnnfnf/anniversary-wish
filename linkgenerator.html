@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Link Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; text-align: center; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .upload-area { border: 2px dashed #ccc; padding: 20px; margin: 20px 0; border-radius: 5px; cursor: pointer; }
+        .upload-area.dragover { border-color: #007bff; background: #e9f4ff; }
+        #preview { max-width: 100%; height: auto; margin: 20px 0; border: 1px solid #ccc; display: none; }
+        #link-output { margin: 20px 0; padding: 10px; background: #f9f9f9; border: 1px solid #ccc; border-radius: 5px; word-break: break-all; display: none; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Photo Link Generator</h1>
+        <p>Upload a photo to generate a shareable link!</p>
+        
+        <div class="upload-area" id="upload-area">
+            <p>Drag & drop a photo here or click to select</p>
+            <input type="file" id="file-input" accept="image/*" class="hidden">
+        </div>
+        
+        <img id="preview" alt="Preview">
+        
+        <div id="link-output">
+            <p>Shareable Link:</p>
+            <input type="text" id="link-text" readonly style="width: 100%; padding: 5px;">
+            <button id="copy-link">Copy Link</button>
+        </div>
+        
+        <button id="reset">Reset</button>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const preview = document.getElementById('preview');
+        const linkOutput = document.getElementById('link-output');
+        const linkText = document.getElementById('link-text');
+        const copyLinkBtn = document.getElementById('copy-link');
+        const resetBtn = document.getElementById('reset');
+
+        // Upload handling
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                processFile(file);
+            }
+        });
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) processFile(file);
+        });
+
+        function processFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                preview.src = dataUrl;
+                preview.style.display = 'block';
+                linkText.value = dataUrl; // Base64 data URL as "link"
+                linkOutput.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Copy link to clipboard
+        copyLinkBtn.addEventListener('click', () => {
+            linkText.select();
+            document.execCommand('copy');
+            alert('Link copied to clipboard!');
+        });
+
+        // Reset
+        resetBtn.addEventListener('click', () => {
+            preview.style.display = 'none';
+            linkOutput.style.display = 'none';
+            fileInput.value = '';
+            linkText.value = '';
+        });
+    </script>
+</body>
+</html>
+<meta name="description" content="Generate shareable photo links instantly. Upload images, create data URLs, and share them easily with drag-and-drop support.">
+<meta name="keywords" content="photo link generator, image sharing, data URL converter, shareable links">
+<meta name="author" content="Photo Link Generator">
+<meta property="og:title" content="Photo Link Generator - Share Images Instantly">
+<meta property="og:description" content="Quick and easy photo link generation tool. Upload images and get shareable links in seconds.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yoursite.com/linkgenerator.html">
